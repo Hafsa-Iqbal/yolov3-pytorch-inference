@@ -12,5 +12,4 @@
 # limitations under the License.
 # ==============================================================================
 from .darknet import *
-from .losses import *
 from .utils import *

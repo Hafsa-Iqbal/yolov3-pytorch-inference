@@ -42,8 +42,8 @@ def get_opts() -> argparse.Namespace:
     parser.add_argument(
         "--model-config-path",
         type=str,
-        default="./model_configs/COCO-Detection/yolov3.cfg",
-        help="path to model config file. Default: ``./model_configs/COCO-Detection/yolov3.cfg``",
+        default="./model_configs/COCO-Detection/yolov3_tiny.cfg",
+        help="path to model config file. Default: ``./model_configs/COCO-Detection/yolov3_tiny.cfg``",
     )
     parser.add_argument(
         "--img-size",

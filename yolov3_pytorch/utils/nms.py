@@ -18,7 +18,16 @@ import torchvision.ops
 from torch import Tensor
 
 from .common import xywh2xyxy
-from .metrics.iou import box_iou
+
+
+def box_iou(box1: Tensor, box2: Tensor) -> Tensor:
+    def box_area(box):
+        return (box[2] - box[0]) * (box[3] - box[1])
+
+    area1 = box_area(box1.t())
+    area2 = box_area(box2.t())
+    inter = (torch.min(box1[:, None, 2:], box2[:, 2:]) - torch.max(box1[:, None, :2], box2[:, :2])).clamp(0).prod(2)
+    return inter / (area1[:, None] + area2 - inter)
 
 __all__ = [
     "non_max_suppression",

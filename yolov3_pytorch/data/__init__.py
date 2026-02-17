@@ -11,9 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-from .base import *
 from .data_augment import *
 from .images import *
 from .stream import *
-from .webcam import *
 
