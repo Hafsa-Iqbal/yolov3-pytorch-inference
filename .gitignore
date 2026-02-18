@@ -28,3 +28,4 @@ yolov3_pytorch.egg-info
 *.jpeg
 *.png
 *.bmp
+__pycache__/
