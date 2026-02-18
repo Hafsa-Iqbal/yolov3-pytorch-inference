@@ -48,7 +48,7 @@ pip install -r requirements.txt
 
 Download `best_compat.pth.tar` from the link below:
 
-> **[Download Weights (OneDrive)](https://nuigalwayie-my.sharepoint.com/:u:/g/personal/0135054s_universityofgalway_ie/IQDd8SPiIEoDS4JNUAKB5kXBAXZE1kLyjWlvSBAqREdDMVI?e=FdONQF)**
+> **[Download Weights (OneDrive)](https://nuigalwayie-my.sharepoint.com/:f:/g/personal/0135054s_universityofgalway_ie/IgCcpRnA0CfcRKCVpd_SxE4GAbBJEQpP4vv0CEIyZIvlwHI?e=HMLKV5)**
 
 Once downloaded, place the file in the pretrained models folder:
 
