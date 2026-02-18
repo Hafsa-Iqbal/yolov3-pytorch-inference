@@ -15,9 +15,10 @@
 
 ## Prerequisites
 
-We assume you already have the **AIMET CPU Docker container** pulled and running. If not:
+We assume you already have the **AIMET CPU/GPU Docker container** pulled and running. If not:
 
 ```bash
+# CPU example below
 docker pull artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-cpu
 docker run -it -p 8888:8888 artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-cpu bash
 ```
@@ -71,7 +72,7 @@ docker cp best_compat.pth.tar <container_id>:/yolov3-pytorch-inference/results/p
 
 ## Step 4 — Run Inference
 
-The repo ships with two sample images in `data/examples/`. Run inference on them:
+The repo provides two sample images in `data/examples/`. Run inference on them:
 
 ```bash
 PYTHONPATH=. python3 ./tools/inference.py ./data/examples \
