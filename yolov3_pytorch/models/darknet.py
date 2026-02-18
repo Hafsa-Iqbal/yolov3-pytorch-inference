@@ -394,7 +394,7 @@ def convert_model_state_dict(model_config_path: Union[str, Path], model_weights_
     # Load weights and save
     # if PyTorch format
     if model_weights_path.endswith(".pth.tar"):
-        state_dict = torch.load(model_weights_path, map_location="cpu")["state_dict"]
+        state_dict = torch.load(model_weights_path, map_location="cpu", weights_only=True)["state_dict"]
         model = load_state_dict(model, state_dict)
 
         target = model_weights_path[:-8] + ".weights"
