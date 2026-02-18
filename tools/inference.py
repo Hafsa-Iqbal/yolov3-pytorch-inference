@@ -11,6 +11,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+# Usage:
+# PYTHONPATH=. python3 ./tools/inference.py ./data/examples \
+#   --model-config-path ./model_configs/COCO-Detection/yolov3.cfg \
+#   --weights ./results/pretrained_models/best_compat.pth.tar \
+#   --device cpu 
 """
 Inference master program
 """
@@ -120,6 +125,18 @@ def get_opts() -> argparse.Namespace:
         default="gpu",
         choices=["cpu", "gpu"],
         help="Device to use. Choice: ['cpu', 'gpu']. Default: ``gpu``",
+    )
+    parser.add_argument(
+        "--compare-gt",
+        action="store_true",
+        help="Save side-by-side comparison: GT boxes (left) | Predicted boxes (right). "
+             "Expects YOLO-format label .txt files alongside images (images/ -> labels/).",
+    )
+    parser.add_argument(
+        "--max-images",
+        type=int,
+        default=-1,
+        help="Maximum number of images to infer on. Default: -1 (all images).",
     )
     opts = parser.parse_args()
 
