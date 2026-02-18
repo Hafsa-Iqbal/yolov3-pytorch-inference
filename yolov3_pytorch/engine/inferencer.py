@@ -18,6 +18,7 @@ import warnings
 from pathlib import Path
 
 import cv2
+import numpy as np
 import torch
 from torch import nn
 from torch.backends import cudnn
@@ -51,6 +52,8 @@ class Inferencer:
         self.filter_classes = opts.filter_classes
         self.agnostic_nms = opts.agnostic_nms
         self.device = select_device(opts.device)
+        self.compare_gt = opts.compare_gt
+        self.max_images = opts.max_images
 
         if self.device.type == "cpu":
             self.half = False
@@ -83,7 +86,7 @@ class Inferencer:
         # Load model weights
         with torch.no_grad():
             if self.weights.endswith(".pth.tar"):
-                ckpt = torch.load(self.weights, map_location=self.device)
+                ckpt = torch.load(self.weights, map_location=self.device, weights_only=True)
                 state_dict = ckpt.get("state_dict")
                 ema_state_dict = ckpt.get("ema_state_dict")
                 if state_dict:
@@ -106,8 +109,59 @@ class Inferencer:
 
         return model
 
+    def _load_gt_boxes(self, image_path: str, img_shape: tuple) -> list:
+        """Load ground-truth boxes from a YOLO-format label file.
+
+        Derives the label path by replacing ``images`` with ``labels`` in *image_path*
+        and changing the extension to ``.txt``.
+
+        Args:
+            image_path (str): Path to the source image.
+            img_shape (tuple): Shape of the image (height, width, channels).
+
+        Returns:
+            list: Each element is ``[x1, y1, x2, y2, class_id]`` in pixel coordinates.
+        """
+        label_path = image_path.replace("images", "labels")
+        label_path = os.path.splitext(label_path)[0] + ".txt"
+
+        boxes = []
+        if not os.path.isfile(label_path):
+            return boxes
+
+        img_h, img_w = img_shape[:2]
+        with open(label_path, "r") as f:
+            for line in f.readlines():
+                parts = line.strip().split()
+                if len(parts) < 5:
+                    continue
+                class_id = int(parts[0])
+                cx, cy, w, h = float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4])
+                x1 = (cx - w / 2) * img_w
+                y1 = (cy - h / 2) * img_h
+                x2 = (cx + w / 2) * img_w
+                y2 = (cy + h / 2) * img_h
+                boxes.append([x1, y1, x2, y2, class_id])
+
+        return boxes
+
+    def _draw_gt_boxes(self, img_frame: np.ndarray, image_path: str) -> None:
+        """Draw ground-truth bounding boxes on *img_frame* in green.
+
+        Args:
+            img_frame (np.ndarray): Image to draw on (modified in-place).
+            image_path (str): Path to the source image (used to find the label file).
+        """
+        gt_boxes = self._load_gt_boxes(image_path, img_frame.shape)
+        for box in gt_boxes:
+            x1, y1, x2, y2, class_id = box
+            class_id = int(class_id)
+            label = self.class_names[class_id] if class_id < len(self.class_names) else str(class_id)
+            plot_one_box((x1, y1, x2, y2), img_frame, label=label, color=(0, 255, 0))
+
     def inference(self) -> None:
         self.model.eval()
+        image_count = 0
 
         for path, img, raw_img, video_capture in self.dataset:
             # Move device transfer and data type conversion outside the loop if they don't depend on loop variables
@@ -180,8 +234,38 @@ class Inferencer:
                 # Save results (image with detections)
                 if self.save_image:
                     if self.dataset.mode == "images":
-                        # Save the image with detections
-                        cv2.imwrite(save_path, raw_frame)
+                        if self.compare_gt:
+                            # Load a fresh copy of the original image for GT visualization
+                            gt_frame = cv2.imread(path)
+                            self._draw_gt_boxes(gt_frame, path)
+
+                            # Add text titles
+                            cv2.putText(gt_frame, "Ground Truth", (10, 30),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                            cv2.putText(raw_frame, "Prediction", (10, 30),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+
+                            # Resize both frames to the same height if they differ
+                            gt_h, gt_w = gt_frame.shape[:2]
+                            pred_h, pred_w = raw_frame.shape[:2]
+                            if gt_h != pred_h:
+                                target_h = max(gt_h, pred_h)
+                                gt_frame = cv2.resize(gt_frame, (int(gt_w * target_h / gt_h), target_h))
+                                raw_frame = cv2.resize(raw_frame, (int(pred_w * target_h / pred_h), target_h))
+
+                            # Add a thin white vertical separator (3px wide)
+                            separator = np.full((gt_frame.shape[0], 3, 3), 255, dtype=np.uint8)
+
+                            # Stack horizontally
+                            combined = np.hstack([gt_frame, separator, raw_frame])
+
+                            # Save with _compare suffix
+                            base, ext = os.path.splitext(save_path)
+                            compare_path = f"{base}_compare{ext}"
+                            cv2.imwrite(compare_path, combined)
+                        else:
+                            # Save the image with detections
+                            cv2.imwrite(save_path, raw_frame)
                     else:
                         # Release the previous video writer and create a new one
                         vid_writer.release()
@@ -191,3 +275,8 @@ class Inferencer:
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*self.fourcc), fps, (w, h))
                         # Write the current frame with detections to the video
                         vid_writer.write(raw_frame)
+
+            # Track image count for --max-images
+            image_count += 1
+            if self.max_images > 0 and image_count >= self.max_images:
+                break
