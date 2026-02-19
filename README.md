@@ -20,12 +20,12 @@ We assume you already have the **AIMET CPU/GPU Docker container** pulled and run
 ```bash
 # CPU example below
 docker pull artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-cpu
-docker run -it -p 8888:8888 artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-cpu bash
+docker run -it --shm-size=16g -p 8888:8888 artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-cpu bash
 
 
 # Nvidia GPU example below
 docker pull artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-gpu
-docker run -it -p 8888:8888 artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-gpu bash
+docker run -it --shm-size=16g -p 8888:8888 artifacts.codelinaro.org/codelinaro-aimet/aimet-dev:latest.onnx-gpu bash
 ```
 
 Everything below is run **inside the container**.
