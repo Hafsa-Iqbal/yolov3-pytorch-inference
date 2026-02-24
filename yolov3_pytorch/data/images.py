@@ -60,7 +60,10 @@ class LoadImages:
         elif os.path.isfile(self.img_path):
             files = [self.img_path]
         else:
-            raise TypeError(f"img_path must be a directory or path to an image, but got {type(self.img_path)}")
+            raise FileNotFoundError(
+                f"img_path must be an existing directory or path to an image/video file. "
+                f"Path does not exist or is not accessible: {os.path.abspath(self.img_path)!r}"
+            )
 
         # Check format of files
         for file in files:
@@ -93,26 +96,26 @@ class LoadImages:
             path (str): The path to the video.
 
         """
+        if self.cap is not None:
+            self.cap.release()
         self.frame = 0
         self.cap = cv2.VideoCapture(path)
         self.num_frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     def read_video(self, path):
-        with cv2.VideoCapture(path) as cap:
-            while True:
-                ret_val, raw_img = cap.read()
-                if not ret_val:
-                    self.count += 1
-                    if self.count == self.num_files:  # last video
-                        raise StopIteration
-                    else:
-                        path = self.files[self.count]
-                        self.new_video(path)
-                        continue
-
-                self.frame += 1
-                print(f"video {self.count + 1}/{self.num_files} ({self.frame}/{self.num_frames}) {path}: ", end="")
-                break
+        global raw_img
+        while True:
+            ret_val, raw_img = self.cap.read()
+            if not ret_val:
+                self.count += 1
+                if self.count == self.num_files:  # last video
+                    raise StopIteration
+                path = self.files[self.count]
+                self.new_video(path)
+                continue
+            self.frame += 1
+            print(f"video {self.count + 1}/{self.num_files} ({self.frame}/{self.num_frames}) {path}: ", end="")
+            break
 
     def read_image(self, path) -> np.ndarray:
         self.count += 1

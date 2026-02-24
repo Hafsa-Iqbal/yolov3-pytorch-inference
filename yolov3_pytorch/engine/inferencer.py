@@ -162,6 +162,8 @@ class Inferencer:
     def inference(self) -> None:
         self.model.eval()
         image_count = 0
+        vid_writer = None
+        prev_video_path = None
 
         for path, img, raw_img, video_capture in self.dataset:
             # Move device transfer and data type conversion outside the loop if they don't depend on loop variables
@@ -267,16 +269,21 @@ class Inferencer:
                             # Save the image with detections
                             cv2.imwrite(save_path, raw_frame)
                     else:
-                        # Release the previous video writer and create a new one
-                        vid_writer.release()
-                        fps = video_capture.get(cv2.CAP_PROP_FPS)
-                        w = int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
-                        h = int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*self.fourcc), fps, (w, h))
-                        # Write the current frame with detections to the video
+                        # Video mode: create writer once per video file, then write each frame
+                        if path != prev_video_path:
+                            if vid_writer is not None:
+                                vid_writer.release()
+                            fps = video_capture.get(cv2.CAP_PROP_FPS)
+                            w = int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+                            h = int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                            vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*self.fourcc), fps, (w, h))
+                            prev_video_path = path
                         vid_writer.write(raw_frame)
 
             # Track image count for --max-images
             image_count += 1
             if self.max_images > 0 and image_count >= self.max_images:
                 break
+
+        if vid_writer is not None:
+            vid_writer.release()

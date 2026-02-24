@@ -4,3 +4,5 @@ pycocotools
 thop
 wandb
 tensorboard
+# Optional (video inference, e.g. in Docker): uncomment if video won't open
+# opencv-python-headless
