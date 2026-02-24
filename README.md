@@ -86,7 +86,16 @@ PYTHONPATH=. python3 ./tools/inference.py ./data/examples \
   --device cpu
 ```
 
-Output images (with bounding boxes drawn) will be saved to `./results/inference/` by default.
+Output images (with bounding boxes drawn) will be saved to `./results/inference/` by default. To save elsewhere, use `--output`.
+
+### Model inference results
+
+Example outputs from running inference on the sample images in `data/examples/`:
+
+| | |
+|:-------------------------:|:-------------------------:|
+| ![dog](results/inference/dog.jpg) | ![person](results/inference/person.jpg) |
+| *dog.jpg* | *person.jpg* |
 
 To save results to a different folder, use `--output`:
 
