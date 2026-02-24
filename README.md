@@ -178,4 +178,5 @@ PYTHONPATH=. python3 ./tools/inference.py ./data/video.mp4 \
   --output ./results/inference/video
 ```
 
-Output is saved under `--output` (e.g. `./results/inference/video/video.mp4`). **Docker:** if video won’t open, install OpenCV with FFMPEG — see optional line in `requirements.txt` (`opencv-python-headless`).
+Output is saved under `--output` (e.g. `./results/inference/video/video.mp4`).
+**If running video inference in Docker:** and video won’t open, install `opencv-python-headless` with FFMPEG see optional line in `requirements.txt` (you might need to unistall opencv and then install opencv-python-headless for a clean installation).
