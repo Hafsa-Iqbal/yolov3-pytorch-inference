@@ -154,3 +154,19 @@ class_id  center_x  center_y  width  height
 where all coordinates are **normalized (0–1)** relative to the image dimensions.
 
 Output files will be saved with a `_compare` suffix (e.g., `000000000139_compare.jpg`).
+
+---
+
+## Video inference
+
+To run inference on a video file:
+
+```bash
+PYTHONPATH=. python3 ./tools/inference.py ./data/video.mp4 \
+  --model-config-path ./model_configs/COCO-Detection/yolov3.cfg \
+  --weights ./results/pretrained_models/best_compat.pth.tar \
+  --device cpu \
+  --output ./results/inference/video
+```
+
+Output is saved under `--output` (e.g. `./results/inference/video/video.mp4`). **Docker:** if video won’t open, install OpenCV with FFMPEG — see optional line in `requirements.txt` (`opencv-python-headless`).
