@@ -9,9 +9,15 @@ data/coco2014
 data/coco2017
 data/ours
 data/ours.names
+data/video.mp4
+data/video_fixed.mp4
 figure
 dist
-results
+results/*
+!results/inference/
+results/inference/*
+results/inference/video/
+results/inference/*.mp4
 tb_logger
 wandb
 yolov3_pytorch.egg-info
@@ -29,3 +35,9 @@ yolov3_pytorch.egg-info
 *.png
 *.bmp
 __pycache__/
+
+# Allow sample inference images for README (must come after *.jpg etc.)
+!results/inference/*.jpg
+!results/inference/*.jpeg
+!results/inference/*.png
+!results/inference/*.bmp
