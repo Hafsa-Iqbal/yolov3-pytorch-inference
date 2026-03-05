@@ -51,7 +51,8 @@ pip install -r requirements.txt
 
 ## Step 3 — Download the Pretrained Weights
 
-**IMPORTANT: Please Note that in order to download these model weights you need to signed in with University of Galway's Microsoft 365 account**
+**IMPORTANT:** Please Note that in order to download these model weights you need to signed in with University of Galway's Microsoft 365 account.
+
 Download `best_compat.pth.tar` from the link below:
 
 > **[Download Weights (OneDrive)](https://nuigalwayie-my.sharepoint.com/:u:/g/personal/0135054s_universityofgalway_ie/IQAE2eC8iN0WQ6r8ArKN4rK8AZMFKjuNCO8Brv_1_3d1uFc?e=jhXOut)**
@@ -180,4 +181,4 @@ PYTHONPATH=. python3 ./tools/inference.py ./data/video.mp4 \
 ```
 
 Output is saved under `--output` (e.g. `./results/inference/video/video.mp4`).
-**If running video inference in Docker:** and video won’t open, install `opencv-python-headless` with FFMPEG see optional line in `requirements.txt` (you might need to unistall opencv and then install opencv-python-headless for a clean installation).
+**If running video inference in Docker:** and video won’t open, install `opencv-python-headless` with FFMPEG see optional line in `requirements.txt` (you might need to uninstall opencv and then install opencv-python-headless for a clean installation).
