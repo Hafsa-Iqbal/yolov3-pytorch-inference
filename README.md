@@ -51,6 +51,7 @@ pip install -r requirements.txt
 
 ## Step 3 — Download the Pretrained Weights
 
+**IMPORTANT: Please Note that in order to download these model weights you need to signed in with University of Galway's Microsoft 365 account**
 Download `best_compat.pth.tar` from the link below:
 
 > **[Download Weights (OneDrive)](https://nuigalwayie-my.sharepoint.com/:u:/g/personal/0135054s_universityofgalway_ie/IQAE2eC8iN0WQ6r8ArKN4rK8AZMFKjuNCO8Brv_1_3d1uFc?e=jhXOut)**
