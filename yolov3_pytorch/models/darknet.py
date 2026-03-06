@@ -261,7 +261,8 @@ class Darknet(nn.Module):
                                     img_size=img_size,  # (416, 416)
                                     yolo_index=yolo_index,  # 0, 1, 2...
                                     layers=layers,  # output layers
-                                    stride=stride[yolo_index])
+                                    stride=stride[yolo_index],
+                                    onnx_export=self.onnx_export)
 
                 # Initialize preceding Conv2d() bias (https://arxiv.org/pdf/1708.02002.pdf section 3.3)
                 try:
